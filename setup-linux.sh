@@ -67,9 +67,6 @@ install_docker() {
     # Add user to docker group
     sudo usermod -aG docker $USER
 
-    # Apply new group membership (may require logout for full effect)
-    newgrp docker
-
     echo "Docker installation completed!"
 }
 
