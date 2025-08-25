@@ -13,6 +13,10 @@ vim.opt.rtp:prepend(lazypath)
 
 require("options")
 require("key-bindings")
-require("lazy").setup("plugins")
+require("lazy").setup("plugins", {
+	change_detection = {
+		notify = false,
+	},
+})
 
 vim.cmd("hi WinSeparator guifg=#191b20")

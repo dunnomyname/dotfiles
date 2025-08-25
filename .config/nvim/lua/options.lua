@@ -4,6 +4,17 @@ vim.cmd("set softtabstop=2")
 vim.cmd("set shiftwidth=2")
 vim.cmd("set mouse=a")
 
+vim.diagnostic.config({
+	signs = {
+		text = {
+			[vim.diagnostic.severity.ERROR] = "",
+			[vim.diagnostic.severity.WARN] = "",
+			[vim.diagnostic.severity.INFO] = "",
+			[vim.diagnostic.severity.HINT] = "󰌵",
+		},
+	},
+})
+
 vim.opt.swapfile = false -- Don't use swapfiles
 vim.opt.autoread = true -- Auto read file if changed outside of vim
 vim.opt.backspace = "indent,eol,start" -- Allow backspacing over everything in insert mode
@@ -47,6 +58,9 @@ vim.o.conceallevel = 2
 -- Disable netrw
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
+
+-- Reload files when changed outside of vim
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, { command = "checktime" })
 
 -- Open vim to neo-tree
 -- vim.api.nvim_create_autocmd("VimEnter", {

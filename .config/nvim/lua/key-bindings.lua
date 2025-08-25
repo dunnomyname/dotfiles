@@ -39,3 +39,19 @@ vim.api.nvim_set_keymap("n", "<leader>cp", ':let @+=expand("%:p")<CR>', { norema
 
 -- Copy current buffer relative path to clipboard
 vim.api.nvim_set_keymap("n", "<leader>crp", ':let @+=expand("%:p:.")<CR>', { noremap = true, silent = true })
+
+-- Reload the plugin
+local function plugin_reload()
+	for name, _ in pairs(package.loaded) do
+		if name:match("^mimir") then
+			package.loaded[name] = nil
+		end
+	end
+
+	require("mimir")
+	vim.notify("🔄 Reloaded Mimir plugin", vim.log.levels.INFO)
+end
+
+vim.keymap.set("n", "<leader>rr", function()
+	plugin_reload() -- replace with your plugin root
+end, { desc = "Reload myplugin" })

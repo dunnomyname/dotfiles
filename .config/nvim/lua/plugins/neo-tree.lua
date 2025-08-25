@@ -7,11 +7,6 @@ return {
 		"MunifTanjim/nui.nvim",
 	},
 	config = function()
-		vim.fn.sign_define("DiagnosticSignError", { text = " ", texthl = "DiagnosticSignError" })
-		vim.fn.sign_define("DiagnosticSignWarn", { text = " ", texthl = "DiagnosticSignWarn" })
-		vim.fn.sign_define("DiagnosticSignInfo", { text = " ", texthl = "DiagnosticSignInfo" })
-		vim.fn.sign_define("DiagnosticSignHint", { text = "󰌵", texthl = "DiagnosticSignHint" })
-
 		require("neo-tree").setup({
 			default_component_configs = {
 				git_status = {
@@ -43,8 +38,21 @@ return {
 				},
 				-- hijack_netrw_behavior = "disabled",
 				hijack_netrw_behavior = "open_default",
-				use_libuv_file_watcher = false, -- This will use the OS level file watchers to detect changes
+				use_libuv_file_watcher = true, -- This will use the OS level file watchers to detect changes
 				-- instead of relying on nvim autocmd events.
+				commands = {
+					mimir_add_files = function(state)
+						local node = state.tree:get_node()
+						local filepath = node:get_id()
+						local mimir = require("mimir.core")
+						mimir.add_file(filepath)
+					end,
+				},
+				window = {
+					mappings = {
+						["oa"] = "mimir_add_files",
+					},
+				},
 			},
 		})
 		vim.keymap.set("n", "<leader>e", ":Neotree toggle left<CR>")

@@ -18,18 +18,25 @@ return {
 					use_quickfix = true,
 					layout_config = {
 						width = 0.80,
-						preview_width = 0.5,
+						-- preview_width = 0.5,
 					},
 				},
 			})
 
 			vim.keymap.set("n", "<leader>ff", builtin.find_files, { noremap = true })
+			vim.keymap.set("n", "<leader>fw", function()
+				builtin.live_grep({
+					additional_args = function()
+						return { "--hidden" }
+					end,
+				})
+			end, { noremap = true })
 			-- vim.keymap.set("n", "<leader>fw", builtin.live_grep, { noremap = true })
-			vim.keymap.set(
-				"n",
-				"<leader>fw",
-				":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>"
-			)
+			-- vim.keymap.set(
+			-- 	"n",
+			-- 	"<leader>fw",
+			-- 	":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>"
+			-- )
 			vim.keymap.set("n", "<leader>fg", builtin.grep_string, { noremap = true })
 			vim.keymap.set("n", "<leader>fe", builtin.diagnostics, { noremap = true })
 			vim.keymap.set("n", "<leader>fb", builtin.buffers, { noremap = true })

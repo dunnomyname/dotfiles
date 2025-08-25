@@ -5,7 +5,7 @@ return {
 			local file_name = vim.fn.expand("%:p")
 			local src_path = file_name:match("(.*)(/src/)")
 
-			if file_name:match("jest%.js$") or file_name:match("jest%.ts$") then
+			if file_name:match("jest%.js$") or file_name:match("jest%.ts$") or file_name:match("test.ts") then
 				if src_path then
 					local command = string.format(
 						"FloatermNew --title=Jest --wintype=float --height=0.9 --width=0.9 bash -c 'cd %s; yarn jest %s; exec zsh'",
@@ -20,6 +20,10 @@ return {
 				print("Not a Jest test file")
 			end
 		end
+
+		-- Set the default width and height for Floaterm, pressing F12 when there are no open terminals will open a new one with these dimensions
+		vim.g.floaterm_width = 0.9 -- 90% of screen width
+		vim.g.floaterm_height = 0.9 -- 90% of screen height
 
 		-- Run jest test with the current test file. Both are the same, two different shortcuts
 		vim.api.nvim_set_keymap("n", "<leader>yj", ":lua RunJestOnTestFile()<CR>", { noremap = true, silent = true })

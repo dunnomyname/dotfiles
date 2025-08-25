@@ -34,22 +34,14 @@ ask_for_nodejs() {
     esac
 }
 
-# Prompt for installation of Starship
-ask_for_starship() {
-    read -p "Would you like to install Starship? (y/n): " response
+# Prompt for installation of lazygit
+ask_for_lazygit() {
+    read -p "Would you like to install lazygit? (y/n): " response
     case "$response" in
-        [Yy]* ) INSTALL_STARSHIP=true ;;
-        [Nn]* ) INSTALL_STARSHIP=false ;;
-        * ) echo "Please answer with 'y' or 'n'."; ask_for_starship ;;
+        [Yy]* ) INSTALL_LAZYGIT=true ;;
+        [Nn]* ) INSTALL_LAZYGIT=false ;;
+        * ) echo "Please answer with 'y' or 'n'."; ask_for_lazygit ;;
     esac
-}
-
-# Check if script is run with root privileges
-check_root() {
-    if [[ $EUID -ne 0 ]]; then
-        echo "This script must be run as root or with sudo" 
-        exit 1
-    fi
 }
 
 # Install Docker and user to docker group
@@ -57,26 +49,25 @@ install_docker() {
     echo "Installing Docker..."
 
     # Add Docker's official GPG key:
-    sudo apt install -y ca-certificates curl
+    sudo apt-get install -y ca-certificates curl
 
     sudo install -m 0755 -d /etc/apt/keyrings
     sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
     sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-    # Add the repository to Apt sources:
+    # Add the repository to apt sources:
     echo \
-    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
-    $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+        $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+        sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-    sudo apt update
-    sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    sudo apt-get update
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
     # Add user to docker group
-    sudo groupadd docker
     sudo usermod -aG docker $USER
 
-    # Apply new group membership
+    # Apply new group membership (may require logout for full effect)
     newgrp docker
 
     echo "Docker installation completed!"
@@ -85,36 +76,61 @@ install_docker() {
 # Install Node.js and npm
 install_nodejs() {
     echo "Installing Node.js and npm..."
-
     # Install Node.js (LTS version) and npm
     curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-    sudo apt install -y nodejs
-
+    sudo apt-get install -y nodejs
     # Check installation
     node -v
     npm -v
-
     echo "Node.js and npm installation completed!"
 }
 
 # Install common dependencies
 install_common_dependencies() {
     echo "Updating system and installing common dependencies..."
-    sudo apt update
-    sudo apt install -y tmux git rsync zsh snapd
+    sudo apt-get update
+    sudo apt-get install -y tmux git rsync zsh
 }
 
-# Install Neovim via snap for the latest version
+# Install Neovim
 install_neovim() {
     echo "Installing Neovim..."
-    sudo snap install --classic nvim
+    curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-arm64.tar.gz
+    INSTALL_DIR="/home/$USER/.local/opt"
+    mkdir -p $INSTALL_DIR
+    sudo rm -rf $INSTALL_DIR/nvim
+    sudo tar -C $INSTALL_DIR -xzf nvim-linux-arm64.tar.gz
+    rm nvim-linux-arm64.tar.gz
+    echo "Neovim installation completed!"
+}
+
+# Install lazygit
+install_lazygit() {
+    echo "Installing lazygit..."
+    INSTALL_DIR="/home/$USER/.local/bin"
+    mkdir -p $INSTALL_DIR
+    LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \
+    grep -Po '"tag_name": *"v\K[^"]*')
+    curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_arm64.tar.gz"
+    tar -C $INSTALL_DIR -xzf lazygit.tar.gz lazygit
+    rm lazygit.tar.gz
+    echo "Lazygit installation completed!"
+}
+
+# Install zoxide
+install_zoxide() {
+    echo "Installing zoxide..."
+    sh -c "$(wget -O- https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh)"
 }
 
 # Install Oh-My-Zsh
 install_oh_my_zsh() {
     echo "Installing Oh-My-Zsh..."
     yes | sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    chsh -s "$(which zsh)"
+    # Install zsh plugins
+    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+    echo "Oh-My-Zsh installation completed!"
 }
 
 # Install tmux plugins manager
@@ -122,6 +138,7 @@ install_tmux_plugins() {
     echo "Setting up Tmux TPM..."
     git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
     ~/.config/tmux/plugins/tpm/scripts/install_plugins.sh
+    echo "Tmux TPM setup completed!"
 }
 
 # Install fzf
@@ -129,18 +146,12 @@ install_fzf() {
     echo "Installing fzf..."
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.config/fzf
     yes | ~/.config/fzf/install
-}
-
-# Install Starship prompt
-install_starship() {
-    echo "Installing Starship..."
-    sh -c "$(wget -O- https://starship.rs/install.sh)"
+    echo "fzf installation completed!"
 }
 
 # Main script logic
 main() {
     print_header
-    check_root
 
     # Ask the user if they want to install Docker
     ask_for_docker
@@ -148,14 +159,15 @@ main() {
     # Ask the user if they want to install Node.js and npm
     ask_for_nodejs
 
-    # Ask the user if they want to install Starship
-    ask_for_starship
+    # Ask the user if they want to install lazygit
+    ask_for_lazygit
 
     # Install common dependencies and tools
     install_common_dependencies
 
     # Install Neovim, Oh-My-Zsh, Tmux TPM, fzf, Starship
     install_neovim
+    install_zoxide
     install_oh_my_zsh
     install_tmux_plugins
     install_fzf
@@ -174,12 +186,15 @@ main() {
         echo "Node.js and npm installation skipped."
     fi
 
-    # Conditionally install Starship if the user wants it
-    if [ "$INSTALL_NODEJS" = true ]; then
-        install_starship
+    # Conditionally install lazygit if the user wants it
+    if [ "$INSTALL_LAZYGIT" = true ]; then
+        install_lazygit
     else
-        echo "Starship installation skipped."
+        echo "Lazygit installation skipped."
     fi
+
+    # Change the shell to zsh
+    chsh -s "$(which zsh)"
 
     print_footer
 }

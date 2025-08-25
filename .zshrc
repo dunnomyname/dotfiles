@@ -21,7 +21,13 @@ ZSH_THEME="robbyrussell"
 
 # Uncomment the following line to use hyphen-insensitive completion.
 # Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
+HYPHEN_INSENSITIVE="true"
+
+setopt share_history
+setopt append_history
+setopt hist_ignore_dups
+HISTSIZE=50000
+SAVEHIST=50000
 
 # Uncomment one of the following lines to change the auto-update behavior
 # zstyle ':omz:update' mode disabled  # disable automatic updates
@@ -112,9 +118,9 @@ source $ZSH/oh-my-zsh.sh
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 bindkey '^F' fzf-history-widget
 
-eval "$(starship init zsh)"
+export PATH="$PATH:$HOME/.local/opt/nvim-linux-arm64/bin:$HOME/.local/bin"
+
 eval "$(zoxide init zsh)"
 
-# Add the snap binaries to the path (needed for nvim)
 alias vim=nvim
-export PATH=/snap/bin:$PATH
+alias vi=nvim
