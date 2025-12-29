@@ -20,6 +20,7 @@ vim.opt.autoread = true -- Auto read file if changed outside of vim
 vim.opt.backspace = "indent,eol,start" -- Allow backspacing over everything in insert mode
 vim.opt.scrolloff = 5 -- Always show 5 lines above and below the cursor
 vim.opt.fillchars = "eob: " -- Hide the tilde (~) sign on blank lines
+vim.opt.whichwrap:append("h,l,<,>,[,]") -- Allow arrow keys, h/l, and backspace/delete to move to the next/previous line
 
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = " "

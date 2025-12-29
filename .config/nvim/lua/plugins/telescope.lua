@@ -27,7 +27,7 @@ return {
 			vim.keymap.set("n", "<leader>fw", function()
 				builtin.live_grep({
 					additional_args = function()
-						return { "--hidden" }
+						return { "--hidden", "--multiline", "--multiline-dotall" }
 					end,
 				})
 			end, { noremap = true })
@@ -41,7 +41,7 @@ return {
 			vim.keymap.set("n", "<leader>fe", builtin.diagnostics, { noremap = true })
 			vim.keymap.set("n", "<leader>fb", builtin.buffers, { noremap = true })
 			vim.keymap.set("n", "<leader><leader>", builtin.oldfiles, { noremap = true })
-			vim.keymap.set("n", "<leader>fr", builtin.registers, { noremap = true })
+			-- vim.keymap.set("n", "<leader>fr", builtin.registers, { noremap = true })
 
 			vim.keymap.set("n", "<leader>/", builtin.current_buffer_fuzzy_find, { noremap = true })
 

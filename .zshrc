@@ -78,6 +78,11 @@ SAVEHIST=50000
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
 
+# Binds the Tab key to accept the autosuggestion
+# Once you do this, you can use the Shift+Tab to trigger the suggestions for files and directories like in bash "cd <Ctrl+Tab>" will show the suggestions
+# This needs to happen after the plugins are loaded
+bindkey '^I' autosuggest-accept
+
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
@@ -120,7 +125,16 @@ bindkey '^F' fzf-history-widget
 
 export PATH="$PATH:$HOME/.local/opt/nvim-linux-arm64/bin:$HOME/.local/bin"
 
-eval "$(zoxide init zsh)"
+# I keep writing "vim ," instead of "vim ." ¯\_(ツ)_/¯
+vim() {
+  if [[ "$1" == "," ]]; then
+    command nvim .
+  else
+    command nvim "$@"
+  fi
+}
 
-alias vim=nvim
-alias vi=nvim
+export SEARXNG_API_URL="https://search.megatlin.com"
+
+
+eval "$(zoxide init zsh)"

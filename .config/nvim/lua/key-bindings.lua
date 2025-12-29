@@ -31,6 +31,10 @@ vim.api.nvim_set_keymap("n", "<leader>c", ":nohlsearch<CR>", { noremap = true, s
 -- Replace text with the contents of the unnamed register without altering the register
 vim.api.nvim_set_keymap("v", "<leader>p", '"_dP', { noremap = true, silent = true })
 
+-- Tab and Untab in Visual mode
+vim.keymap.set("v", "<Tab>", ">gv", { noremap = true, silent = true })
+vim.keymap.set("v", "<S-Tab>", "<gv", { noremap = true, silent = true })
+
 -- Press Esc to go to normal mode from terminal mode
 -- vim.api.nvim_set_keymap("t", "<Esc>", "<C-\\><C-n>", { noremap = true, silent = true })
 
