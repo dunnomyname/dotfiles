@@ -134,7 +134,4 @@ vim() {
   fi
 }
 
-export SEARXNG_API_URL="https://search.megatlin.com"
-
-
 eval "$(zoxide init zsh)"
